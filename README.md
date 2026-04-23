@@ -343,12 +343,6 @@ This project is for **educational and research purposes only**. It is not intend
 ## 👨‍💻 Author
 
 **Dipendra**
-- 🎓 Machine Learning Engineer (in progress)
-- 📄 Published: [Heart Disease Prediction using ML — WHO STEPS Nepal 2019](https://www.researchgate.net/publication/397374470)
-- 🧠 This Project: Brain Tumor Detection using Deep Learning + Grad-CAM
-- 📧 [Your Email]
-- 🔗 [Your LinkedIn]
-- 🐙 [Your GitHub]
 
 ---
 
