@@ -1,0 +1,9 @@
+models/
+*.h5
+*.keras
+sample_images.png
+cnn_training_curves.png
+transfer_training_curves.png
+efficientnet_training_curves.png
+confusion_matrices.png
+model_comparison.png
