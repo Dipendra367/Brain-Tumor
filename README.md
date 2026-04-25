@@ -3,10 +3,11 @@
 ![Python](https://img.shields.io/badge/Python-3.12-blue?style=flat-square&logo=python)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.21-orange?style=flat-square&logo=tensorflow)
 ![Streamlit](https://img.shields.io/badge/Streamlit-App-red?style=flat-square&logo=streamlit)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=flat-square&logo=docker)
 ![Accuracy](https://img.shields.io/badge/Accuracy-89.31%25-green?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
-> An end-to-end deep learning project that classifies brain tumors from MRI scans into 4 categories with **89.31% test accuracy** and **96.25% validation accuracy**, featuring Grad-CAM explainability and a live Streamlit web application.
+> An end-to-end deep learning project that classifies brain tumors from MRI scans into 4 categories with **89.31% test accuracy** and **96.25% validation accuracy**, featuring Grad-CAM explainability, a live Streamlit web application, and full Docker containerization.
 
 ---
 
@@ -21,6 +22,7 @@
 - [Results](#-results)
 - [Grad-CAM Explainability](#-grad-cam-explainability)
 - [Web Application](#-web-application)
+- [Docker](#-docker)
 - [Installation](#-installation)
 - [Usage](#-usage)
 - [Tech Stack](#-tech-stack)
@@ -37,6 +39,7 @@ This project builds an AI-powered system that:
 - Highlights the exact region of the brain the AI focuses on (Grad-CAM)
 - Provides confidence scores for each prediction
 - Delivers results through a user-friendly web interface
+- Runs anywhere via Docker containerization
 
 ---
 
@@ -102,6 +105,8 @@ brain_tumor_project/
 ├── 4_evaluate.py              ← Model evaluation & comparison
 ├── 5_gradcam.py               ← Grad-CAM heatmap generation
 ├── 6_predict.py               ← Standalone prediction function
+├── Dockerfile                 ← Docker containerization
+├── .dockerignore              ← Docker ignore rules
 ├── requirements.txt
 └── README.md
 ```
@@ -149,6 +154,11 @@ Used MobileNetV2 pretrained on ImageNet:
 - MRI validity check before prediction
 - Real-time Grad-CAM generation
 - Confidence bar chart for all classes
+
+### Step 7 — Docker Containerization
+- Packaged entire app into a Docker image
+- Runs on any machine with Docker installed
+- No Python/TensorFlow setup required on host machine
 
 ---
 
@@ -244,12 +254,76 @@ streamlit run app/app.py
 
 ---
 
+## 🐳 Docker
+
+The entire application is containerized with Docker — no need to install Python, TensorFlow, or any dependencies on your machine.
+
+### Quick Start with Docker
+
+```bash
+# 1. Clone repo
+git clone https://github.com/Dipendra367/Brain-Tumor.git
+cd Brain-Tumor
+
+# 2. Build image
+docker build -t brain-tumor-detector .
+
+# 3. Run container in background
+docker run -d -p 8501:8501 --name brain-tumor brain-tumor-detector
+
+# 4. Open browser
+http://localhost:8501
+```
+
+### Docker Commands
+
+```bash
+# Start container
+docker start brain-tumor
+
+# Stop container
+docker stop brain-tumor
+
+# View logs
+docker logs brain-tumor
+
+# Check status
+docker ps
+```
+
+### Why Docker?
+
+| Without Docker | With Docker |
+|----------------|-------------|
+| Needs Python installed | Just needs Docker ✅ |
+| Needs all libraries installed | Everything bundled ✅ |
+| Works on your machine only | Works on any machine ✅ |
+| Hard to deploy to cloud | One command cloud deploy ✅ |
+
+---
+
 ## ⚙️ Installation
+
+### Option 1 — Docker (Recommended) 🐳
+
+```bash
+# Clone repo
+git clone https://github.com/Dipendra367/Brain-Tumor.git
+cd Brain-Tumor
+
+# Build and run
+docker build -t brain-tumor-detector .
+docker run -d -p 8501:8501 --name brain-tumor brain-tumor-detector
+
+# Open http://localhost:8501
+```
+
+### Option 2 — Manual Setup
 
 **1. Clone the repository:**
 ```bash
-git clone https://github.com/YOUR_USERNAME/brain-tumor-detector.git
-cd brain-tumor-detector
+git clone https://github.com/Dipendra367/Brain-Tumor.git
+cd Brain-Tumor
 ```
 
 **2. Create virtual environment:**
@@ -317,6 +391,7 @@ python 4_evaluate.py
 | Data Processing | NumPy, scikit-learn |
 | Visualization | Matplotlib, Seaborn |
 | Web App | Streamlit |
+| Containerization | Docker 29.4.0 |
 | GPU | NVIDIA RTX 3050 6GB (CUDA 12.5) |
 | IDE | PyCharm |
 
@@ -325,6 +400,7 @@ python 4_evaluate.py
 ## 🔮 Future Work
 
 - [ ] Deploy on Streamlit Cloud (public link)
+- [ ] Push Docker image to Docker Hub
 - [ ] Support DICOM format (real hospital MRI format)
 - [ ] Generate downloadable PDF report per scan
 - [ ] Add patient history tracking
@@ -343,6 +419,10 @@ This project is for **educational and research purposes only**. It is not intend
 ## 👨‍💻 Author
 
 **Dipendra**
+- 🎓 Machine Learning Engineer (in progress)
+- 📄 Published: [Heart Disease Prediction using ML — WHO STEPS Nepal 2019](https://www.researchgate.net/publication/397374470)
+- 🧠 This Project: Brain Tumor Detection using Deep Learning + Grad-CAM + Docker
+- 🐙 [GitHub](https://github.com/Dipendra367)
 
 ---
 
