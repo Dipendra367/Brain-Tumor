@@ -22,7 +22,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app/ ./app/
 COPY models/best_model.keras ./models/best_model.keras
 COPY models/production_model_info.txt ./models/production_model_info.txt
-COPY firebase-credentials.json ./firebase-credentials.json
 
 # ── Expose FastAPI port ────────────────────────────────────
 EXPOSE 8000

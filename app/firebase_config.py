@@ -1,17 +1,24 @@
 import firebase_admin
 from firebase_admin import credentials, firestore
 import os
-
-# ── Config ────────────────────────────────────────────────
-# firebase-credentials.json sits in project root (one level above app/)
-BASE_DIR  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CRED_PATH = os.path.join(BASE_DIR, "firebase-credentials.json")
+import json
 
 # ── Initialize Firebase (only once) ──────────────────────
+# Credentials are loaded from the FIREBASE_CREDENTIALS environment variable.
+# Set this in the Railway dashboard with the full JSON contents of your
+# firebase-credentials.json file.
 if not firebase_admin._apps:
-    cred = credentials.Certificate(CRED_PATH)
+    creds_json = os.environ.get("FIREBASE_CREDENTIALS")
+    if not creds_json:
+        raise RuntimeError(
+            "FIREBASE_CREDENTIALS environment variable is not set. "
+            "Set it in the Railway dashboard with the contents of your "
+            "firebase-credentials.json file."
+        )
+    cred_dict = json.loads(creds_json)
+    cred = credentials.Certificate(cred_dict)
     firebase_admin.initialize_app(cred)
-    print(f"✅ Firebase initialized: braindetect-1842e")
+    print("✅ Firebase initialized")
 
 # ── Firestore client ──────────────────────────────────────
 db = firestore.client()
