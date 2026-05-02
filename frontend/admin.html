@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BrainDetect — Admin Dashboard</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<div class="page">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="logo">Brain<span>Detect</span></a>
+    <div class="nav-user">
+      <span class="nav-badge admin">Admin</span>
+      <span id="navName" style="color:var(--text-dim);font-size:0.9rem"></span>
+      <button class="btn btn-secondary" onclick="logout()" style="padding:8px 16px;font-size:0.85rem">Logout</button>
+    </div>
+  </nav>
+
+  <div style="padding:32px;">
+
+    <!-- Stats Grid -->
+    <div style="margin-bottom:32px;">
+      <p class="section-title" style="margin-bottom:16px;">System Overview</p>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="statTotal">—</div>
+          <div class="stat-label">Total Predictions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statDoctors">—</div>
+          <div class="stat-label">Total Doctors</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statActive">—</div>
+          <div class="stat-label">Active Doctors</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statGlioma" style="color:var(--danger)">—</div>
+          <div class="stat-label">Glioma Cases</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statMeningioma" style="color:var(--warning)">—</div>
+          <div class="stat-label">Meningioma Cases</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statPituitary" style="color:var(--accent2)">—</div>
+          <div class="stat-label">Pituitary Cases</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statNoTumor" style="color:var(--success)">—</div>
+          <div class="stat-label">No Tumor Cases</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Doctors Management -->
+    <div class="card">
+      <div class="section-header">
+        <span class="section-title">Doctor Accounts</span>
+        <div style="display:flex;gap:12px;">
+          <button class="btn btn-secondary" style="padding:8px 16px;font-size:0.85rem" onclick="loadDoctors()">
+            ↻ Refresh
+          </button>
+          <button class="btn btn-primary" style="padding:8px 16px;font-size:0.85rem" onclick="showCreateDoctor()">
+            + Add Doctor
+          </button>
+        </div>
+      </div>
+
+      <div class="alert" id="adminAlert"></div>
+
+      <!-- Create Doctor Form (hidden by default) -->
+      <div id="createDoctorForm" style="display:none;background:var(--bg-input);border-radius:var(--radius-sm);padding:20px;margin-bottom:20px;">
+        <p style="font-weight:600;margin-bottom:16px;color:var(--text-dim);">Create New Doctor Account</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="form-group" style="margin-bottom:0">
+            <label>Full Name</label>
+            <input type="text" id="newDocName" placeholder="Dr. Jane Smith"/>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>Email</label>
+            <input type="email" id="newDocEmail" placeholder="doctor@hospital.com"/>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>Password</label>
+            <input type="password" id="newDocPassword" placeholder="Min 6 characters"/>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label>Hospital</label>
+            <input type="text" id="newDocHospital" placeholder="Hospital name"/>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:16px;">
+          <button class="btn btn-success" onclick="createDoctor()">Create Account</button>
+          <button class="btn btn-secondary" onclick="hideCreateDoctor()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Doctors Table -->
+      <div id="doctorsTable">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA7QZBDSeJN_ShK8BDAUmzG3Umob2L_8G8",
+    authDomain: "braindetect-1842e.firebaseapp.com",
+    projectId: "braindetect-1842e",
+    storageBucket: "braindetect-1842e.firebasestorage.app",
+    messagingSenderId: "760444584185",
+    appId: "1:760444584185:web:389962bf21b8b7e90c6228"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const API  = "http://127.0.0.1:8000";
+
+  // ── Auth guard ─────────────────────────────────────────
+  const token    = sessionStorage.getItem('token');
+  const fullName = sessionStorage.getItem('full_name');
+  const role     = sessionStorage.getItem('role');
+
+  if (!token || role !== 'admin') { window.location.href = 'index.html'; }
+
+  document.getElementById('navName').textContent = fullName || '';
+
+  // ── Load stats ─────────────────────────────────────────
+  window.loadStats = async () => {
+    try {
+      const res  = await fetch(`${API}/api/admin/stats`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) return;
+
+      document.getElementById('statTotal').textContent      = data.total_predictions;
+      document.getElementById('statDoctors').textContent    = data.total_doctors;
+      document.getElementById('statActive').textContent     = data.active_doctors;
+      document.getElementById('statGlioma').textContent     = data.by_class.Glioma;
+      document.getElementById('statMeningioma').textContent = data.by_class.Meningioma;
+      document.getElementById('statPituitary').textContent  = data.by_class.Pituitary;
+      document.getElementById('statNoTumor').textContent    = data.by_class['No Tumor'];
+    } catch(err) { console.error(err); }
+  };
+
+  // ── Load doctors ───────────────────────────────────────
+  window.loadDoctors = async () => {
+    try {
+      const res  = await fetch(`${API}/api/admin/doctors`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.doctors.length) {
+        document.getElementById('doctorsTable').innerHTML =
+          '<p style="color:var(--text-muted);text-align:center;padding:24px;">No doctors registered yet</p>';
+        return;
+      }
+
+      const rows = data.doctors.map(d => `
+        <tr>
+          <td style="font-weight:500">${d.full_name}</td>
+          <td style="color:var(--text-muted)">${d.email}</td>
+          <td style="color:var(--text-muted)">${d.hospital || '—'}</td>
+          <td>
+            <span class="badge ${d.active ? 'badge-none' : 'badge-high'}">
+              ${d.active ? 'Active' : 'Disabled'}
+            </span>
+          </td>
+          <td>
+            <button class="btn ${d.active ? 'btn-danger' : 'btn-success'}"
+              style="padding:6px 14px;font-size:0.8rem"
+              onclick="toggleDoctor('${d.uid}', ${!d.active})">
+              ${d.active ? 'Disable' : 'Enable'}
+            </button>
+          </td>
+        </tr>
+      `).join('');
+
+      document.getElementById('doctorsTable').innerHTML = `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Hospital</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      `;
+    } catch(err) { console.error(err); }
+  };
+
+  // ── Toggle doctor ──────────────────────────────────────
+  window.toggleDoctor = async (uid, active) => {
+    try {
+      const res = await fetch(`${API}/api/admin/doctors/toggle`, {
+        method  : 'PATCH',
+        headers : { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body    : JSON.stringify({ uid, active })
+      });
+      const data = await res.json();
+
+      if (!res.ok) { showAlert(data.detail || 'Error', 'error'); return; }
+
+      showAlert(data.message, 'success');
+      loadDoctors();
+      loadStats();
+    } catch(err) { showAlert(err.message, 'error'); }
+  };
+
+  // ── Create doctor ──────────────────────────────────────
+  window.showCreateDoctor = () => {
+    document.getElementById('createDoctorForm').style.display = 'block';
+  };
+
+  window.hideCreateDoctor = () => {
+    document.getElementById('createDoctorForm').style.display = 'none';
+  };
+
+  window.createDoctor = async () => {
+    const name     = document.getElementById('newDocName').value;
+    const email    = document.getElementById('newDocEmail').value;
+    const password = document.getElementById('newDocPassword').value;
+    const hospital = document.getElementById('newDocHospital').value;
+
+    if (!name || !email || !password) { showAlert('Fill in all required fields', 'error'); return; }
+
+    try {
+      const res  = await fetch(`${API}/api/auth/register`, {
+        method  : 'POST',
+        headers : { 'Content-Type': 'application/json' },
+        body    : JSON.stringify({ email, password, role: 'doctor', full_name: name, hospital })
+      });
+      const data = await res.json();
+
+      if (!res.ok) { showAlert(data.detail || 'Error creating account', 'error'); return; }
+
+      showAlert(`Doctor account created for ${name}`, 'success');
+      hideCreateDoctor();
+      loadDoctors();
+      loadStats();
+
+      // Clear form
+      ['newDocName','newDocEmail','newDocPassword','newDocHospital']
+        .forEach(id => document.getElementById(id).value = '');
+
+    } catch(err) { showAlert(err.message, 'error'); }
+  };
+
+  // ── Logout ─────────────────────────────────────────────
+  window.logout = async () => {
+    await signOut(auth);
+    sessionStorage.clear();
+    window.location.href = 'index.html';
+  };
+
+  // ── Alert helper ───────────────────────────────────────
+  function showAlert(msg, type='success') {
+    const el = document.getElementById('adminAlert');
+    el.textContent = msg;
+    el.className = `alert alert-${type} show`;
+    setTimeout(() => { el.className = 'alert'; }, 4000);
+  }
+
+  // ── Init ───────────────────────────────────────────────
+  loadStats();
+  loadDoctors();
+</script>
+</body>
+</html>

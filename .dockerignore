@@ -1,9 +1,26 @@
-.venv/
+# Python
 __pycache__/
-*.pyc
-*.pyo
-.git/
+*.py[cod]
+.venv/
+venv/
+
+# Dataset (too large)
 dataset/
+
+# Old checkpoints only
+models/cnn_model.h5
+models/best_model_89percent.keras
+models/best_model_backup_*.keras
+models/efficientnet_*.keras
+models/best_model_finetuned.keras
+
+# Frontend (on Vercel)
+frontend/
+
+# Dev files
 gradcam_outputs/
-*.png
+.git/
+.gitignore
 .idea/
+.vscode/
+*.ipynb

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BrainDetect — Login</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+<div class="page hero">
+  <div class="auth-card">
+
+    <div class="auth-logo">
+      <h1>Brain<span style="color:var(--text)">Detect</span></h1>
+      <p>AI-powered brain tumour detection</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-group">
+      <button class="tab-btn active" onclick="showTab('login')">Login</button>
+      <button class="tab-btn" onclick="showTab('register')">Register</button>
+    </div>
+
+    <!-- Alert -->
+    <div class="alert" id="alert"></div>
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="you@hospital.com" required/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required/>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Login</button>
+    </form>
+
+    <!-- REGISTER FORM -->
+    <form id="registerForm" style="display:none" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="regName" placeholder="Dr. Jane Smith" required/>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="regEmail" placeholder="you@hospital.com" required/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="Min 6 characters" required/>
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <select id="regRole">
+          <option value="doctor">Doctor</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Hospital</label>
+        <input type="text" id="regHospital" placeholder="Hospital name"/>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+    </form>
+
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA7QZBDSeJN_ShK8BDAUmzG3Umob2L_8G8",
+    authDomain: "braindetect-1842e.firebaseapp.com",
+    projectId: "braindetect-1842e",
+    storageBucket: "braindetect-1842e.firebasestorage.app",
+    messagingSenderId: "760444584185",
+    appId: "1:760444584185:web:389962bf21b8b7e90c6228"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const API = "http://127.0.0.1:8000";
+
+  // ── Tab switching ────────────────────────────────────
+  window.showTab = (tab) => {
+    document.getElementById('loginForm').style.display    = tab === 'login'    ? 'block' : 'none';
+    document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+      b.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
+    });
+    hideAlert();
+  };
+
+  // ── Alert helpers ─────────────────────────────────────
+  function showAlert(msg, type='error') {
+    const el = document.getElementById('alert');
+    el.textContent = msg;
+    el.className = `alert alert-${type} show`;
+  }
+  window.hideAlert = () => { document.getElementById('alert').className = 'alert'; };
+
+  // ── LOGIN ─────────────────────────────────────────────
+  window.handleLogin = async (e) => {
+    e.preventDefault();
+    const email    = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+      const cred    = await signInWithEmailAndPassword(auth, email, password);
+      const idToken = await cred.user.getIdToken();
+
+      // Verify with backend + get role
+      const res  = await fetch(`${API}/api/auth/login`, {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body   : JSON.stringify({ id_token: idToken })
+      });
+      const data = await res.json();
+
+      if (!res.ok) { showAlert(data.detail || 'Login failed'); return; }
+
+      // Save to session
+      sessionStorage.setItem('token',     idToken);
+      sessionStorage.setItem('uid',       data.uid);
+      sessionStorage.setItem('role',      data.role);
+      sessionStorage.setItem('full_name', data.full_name);
+
+      // Redirect by role
+      if      (data.role === 'admin')  window.location.href = 'admin.html';
+      else if (data.role === 'doctor') window.location.href = 'doctor.html';
+      else showAlert('Unknown role');
+
+    } catch (err) {
+      showAlert(err.message.includes('password') ? 'Invalid email or password' : err.message);
+    }
+  };
+
+  // ── REGISTER ──────────────────────────────────────────
+  window.handleRegister = async (e) => {
+    e.preventDefault();
+    const name     = document.getElementById('regName').value;
+    const email    = document.getElementById('regEmail').value;
+    const password = document.getElementById('regPassword').value;
+    const role     = document.getElementById('regRole').value;
+    const hospital = document.getElementById('regHospital').value;
+
+    try {
+      const res  = await fetch(`${API}/api/auth/register`, {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body   : JSON.stringify({ email, password, role, full_name: name, hospital })
+      });
+      const data = await res.json();
+
+      if (!res.ok) { showAlert(data.detail || 'Registration failed'); return; }
+
+      showAlert(`Account created! You can now login.`, 'success');
+      showTab('login');
+
+    } catch (err) {
+      showAlert(err.message);
+    }
+  };
+</script>
+</body>
+</html>

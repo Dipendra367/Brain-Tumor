@@ -1,0 +1,7 @@
+▶️ After turning ON your PC
+sudo systemctl start docker
+docker start brain-tumor
+🛑 To STOP your app
+docker stop brain-tumor
+🔁 To START again
+docker start brain-tumor

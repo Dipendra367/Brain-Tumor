@@ -1,26 +1,35 @@
-FROM python:3.12-slim
+# ── Base image ─────────────────────────────────────────────
+FROM python:3.10-slim
 
 WORKDIR /app
 
+# ── System dependencies for OpenCV + TensorFlow ────────────
 RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
     libxrender-dev \
     libgomp1 \
+    libgl1 \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
+# ── Python dependencies ────────────────────────────────────
 COPY requirements.txt .
-
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# ── Copy app code ──────────────────────────────────────────
+COPY app/ ./app/
+COPY models/best_model.keras ./models/best_model.keras
+COPY models/production_model_info.txt ./models/production_model_info.txt
+COPY firebase-credentials.json ./firebase-credentials.json
 
-EXPOSE 8501
+# ── Expose FastAPI port ────────────────────────────────────
+EXPOSE 8000
 
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health || exit 1
+# ── Health check ───────────────────────────────────────────
+HEALTHCHECK CMD curl --fail http://localhost:8000/api/health || exit 1
 
-CMD ["streamlit", "run", "app/app.py", \
-     "--server.port=8501", \
-     "--server.address=0.0.0.0", \
-     "--server.headless=true"]
+# ── Start FastAPI ──────────────────────────────────────────
+WORKDIR /app/app
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
