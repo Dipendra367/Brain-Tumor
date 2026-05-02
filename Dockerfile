@@ -20,8 +20,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # ── Copy app code ──────────────────────────────────────────
 COPY app/ ./app/
-COPY models/best_model.keras ./models/best_model.keras
-COPY models/production_model_info.txt ./models/production_model_info.txt
+# TODO: Model files are not in the repo (gitignored). Choose one approach:
+#   1. Remove models/ from .gitignore and commit the files, OR
+#   2. Add a RUN command to download them from cloud storage (e.g., GCS, S3), OR
+#   3. Mount a Railway volume at /app/models and upload the files there.
+# COPY models/best_model.keras ./models/best_model.keras
+# COPY models/production_model_info.txt ./models/production_model_info.txt
 
 # ── Expose FastAPI port ────────────────────────────────────
 EXPOSE 8000
