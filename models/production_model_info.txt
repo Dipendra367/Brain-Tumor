@@ -1,0 +1,5 @@
+winner=MobileNetV2 Finetuned
+accuracy=0.902500
+loss=0.428200
+preprocess=rescale
+model_path=/home/dipendra/PycharmProjects/brain_tumor_project/models/best_model.keras
