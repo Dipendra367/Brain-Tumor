@@ -3,22 +3,26 @@ from firebase_admin import credentials, firestore
 import os
 import json
 
-# ── Initialize Firebase (only once) ──────────────────────
-# Credentials are loaded from the FIREBASE_CREDENTIALS environment variable.
-# Set this in the Railway dashboard with the full JSON contents of your
-# firebase-credentials.json file.
+# ── Load credentials ──────────────────────────────────────
+# On Railway: credentials are in FIREBASE_CREDENTIALS env variable
+# Locally: credentials are in firebase-credentials.json file
+
 if not firebase_admin._apps:
-    creds_json = os.environ.get("FIREBASE_CREDENTIALS")
-    if not creds_json:
-        raise RuntimeError(
-            "FIREBASE_CREDENTIALS environment variable is not set. "
-            "Set it in the Railway dashboard with the contents of your "
-            "firebase-credentials.json file."
-        )
-    cred_dict = json.loads(creds_json)
-    cred = credentials.Certificate(cred_dict)
+    firebase_creds_env = os.environ.get("FIREBASE_CREDENTIALS")
+
+    if firebase_creds_env:
+        # Railway deployment — load from environment variable
+        cred_dict = json.loads(firebase_creds_env)
+        cred = credentials.Certificate(cred_dict)
+        print("✅ Firebase initialized from environment variable")
+    else:
+        # Local development — load from file
+        BASE_DIR  = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        CRED_PATH = os.path.join(BASE_DIR, "firebase-credentials.json")
+        cred = credentials.Certificate(CRED_PATH)
+        print(f"✅ Firebase initialized from file: braindetect-1842e")
+
     firebase_admin.initialize_app(cred)
-    print("✅ Firebase initialized")
 
 # ── Firestore client ──────────────────────────────────────
 db = firestore.client()
