@@ -72,13 +72,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Railway CLI
-        run: |
-          npm install -g @railway/cli
+        run: npm install -g @railway/cli
 
       - name: Deploy to Railway
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
-          railway up --detach
-          echo "✅ Deployed to Railway successfully"
-          echo "🌐 Live at: https://brain-tumor-production-dd38.up.railway.app"
+          curl -X POST \
+                      -H "Authorization: Bearer $RAILWAY_TOKEN" \
+                      -H "Content-Type: application/json" \
+                      -d '{"serviceId": "a8574676-2e53-4616-8bd7-356959aa3544", "environmentId": "1cf95e41-b00c-45ed-b284-359147dde6d9"}' \
+                      https://backboard.railway.app/graphql/v2 \
+                      --data '{"query": "mutation { deploymentCreate(input: { serviceId: \"a8574676-2e53-4616-8bd7-356959aa3544\", environmentId: \"1cf95e41-b00c-45ed-b284-359147dde6d9\" }) { id } }"}' \
+                      && echo "✅ Deployed successfully"

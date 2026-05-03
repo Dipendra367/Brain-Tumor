@@ -1,0 +1,30 @@
+BrainDetect — Deployment URLs
+==============================
+
+Frontend (Vercel)
+-----------------
+URL: https://brain-tumor-phi.vercel.app/
+Doctor Dashboard: https://brain-tumor-phi.vercel.app/doctor.html
+Patient Page:     https://brain-tumor-phi.vercel.app/patient.html
+Admin Dashboard:  https://brain-tumor-phi.vercel.app/admin.html
+
+Backend (Railway)
+-----------------
+API Base URL: https://brain-tumor-production-dd38.up.railway.app
+API Docs:     https://brain-tumor-production-dd38.up.railway.app/docs
+Health Check: https://brain-tumor-production-dd38.up.railway.app/api/health
+
+Firebase
+--------
+Project ID:   braindetect-1842e
+Auth:         https://console.firebase.google.com/project/braindetect-1842e/authentication
+Firestore:    https://console.firebase.google.com/project/braindetect-1842e/firestore
+
+GitHub
+------
+Repository: https://github.com/Dipendra367/Brain-Tumor
+
+Test Accounts
+-------------
+Admin:  admin@braindetect.com  / Admin123!
+Doctor: doctor@braindetect.com / Doctor123!
