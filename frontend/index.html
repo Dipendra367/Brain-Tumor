@@ -3,171 +3,771 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BrainDetect — Login</title>
-  <link rel="stylesheet" href="css/style.css"/>
+  <title>BrainDetect — AI Brain Tumour Detection</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #080c18;
+      --accent: #00d4ff;
+      --accent2: #7c3aed;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --card: #0f1724;
+      --border: #1e2d45;
+
+      --space-xs: 8px;
+      --space-sm: 16px;
+      --space-md: 24px;
+      --space-lg: 40px;
+      --space-xl: 64px;
+      --space-2xl: 100px;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+
+      --max-w: 1080px;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Background ──────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,212,255,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(124,58,237,0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Navbar ───────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 68px;
+      background: rgba(8,12,24,0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(0,212,255,0.08);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: -0.4px;
+    }
+    .nav-logo span { color: var(--text); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-outline {
+      padding: 9px 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: 1;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-primary {
+      padding: 9px 18px;
+      background: var(--accent);
+      border-radius: var(--radius-sm);
+      color: #080c18;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 700;
+      line-height: 1;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      background: #00b8d9;
+      box-shadow: 0 0 24px rgba(0,212,255,0.3);
+    }
+
+    /* ── Hero ─────────────────────────────────────── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 68px 24px 80px;
+    }
+
+    .hero-inner {
+      max-width: 780px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: 6px 16px;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 20px;
+      font-size: 0.78rem;
+      color: var(--accent);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      margin-bottom: 28px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.2rem, 4.5vw, 4.2rem);
+      font-weight: 800;
+      line-height: 1.06;
+      letter-spacing: -1px;
+      margin-bottom: 22px;
+      animation: fadeUp 0.8s ease 0.1s both;
+    }
+    .hero h1 .accent { color: var(--accent); }
+
+    .hero p {
+      font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+      color: var(--muted);
+      line-height: 1.75;
+      max-width: 560px;
+      font-weight: 300;
+      margin-bottom: 44px;
+      animation: fadeUp 0.8s ease 0.2s both;
+    }
+
+    .hero-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s ease 0.3s both;
+    }
+
+    .btn-hero-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: 14px 28px;
+      background: var(--accent);
+      color: #080c18;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    .btn-hero-primary:hover {
+      background: #00b8d9;
+      box-shadow: 0 0 40px rgba(0,212,255,0.4);
+      transform: translateY(-2px);
+    }
+
+    .btn-hero-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: 14px 28px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: var(--radius-md);
+      font-weight: 500;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .btn-hero-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Stats Bar ────────────────────────────────── */
+    .stats-bar {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stat-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 32px 24px;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      font-weight: 500;
+    }
+
+    /* ── Sections ─────────────────────────────────── */
+    .section {
+      position: relative;
+      z-index: 1;
+      padding: var(--space-2xl) 48px;
+      max-width: calc(var(--max-w) + 96px);
+      margin: 0 auto;
+    }
+    .section + .section { padding-top: 0; }
+
+    .section-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .section-eyebrow::before {
+      content: '';
+      width: 20px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 14px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 480px;
+      line-height: 1.7;
+      margin-bottom: 52px;
+    }
+
+    /* ── Steps ────────────────────────────────────── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .step-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .step-card:hover {
+      border-color: rgba(0,212,255,0.3);
+      transform: translateY(-4px);
+    }
+    .step-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .step-card:hover::before { opacity: 1; }
+
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: rgba(0,212,255,0.1);
+      line-height: 1;
+      margin-bottom: 14px;
+      user-select: none;
+    }
+    .step-icon {
+      font-size: 1.8rem;
+      margin-bottom: 14px;
+      line-height: 1;
+    }
+    .step-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .step-desc {
+      color: var(--muted);
+      font-size: 0.875rem;
+      line-height: 1.65;
+    }
+
+    /* ── Features ─────────────────────────────────── */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 26px;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      transition: border-color 0.25s;
+    }
+    .feature-card:hover { border-color: rgba(0,212,255,0.25); }
+
+    .feature-icon {
+      width: 46px;
+      height: 46px;
+      background: rgba(0,212,255,0.07);
+      border: 1px solid rgba(0,212,255,0.14);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .feature-body { display: flex; flex-direction: column; gap: 6px; }
+
+    .feature-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .feature-desc {
+      color: var(--muted);
+      font-size: 0.845rem;
+      line-height: 1.65;
+    }
+
+    /* ── Roles ────────────────────────────────────── */
+    .roles {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .role-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .role-card:hover {
+      border-color: rgba(0,212,255,0.3);
+      transform: translateY(-4px);
+    }
+
+    .role-icon {
+      font-size: 2.4rem;
+      margin-bottom: 14px;
+      line-height: 1;
+    }
+    .role-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .role-desc {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.65;
+      flex: 1;
+      margin-bottom: 22px;
+    }
+
+    .role-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 20px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .role-link:hover { border-color: var(--accent); color: var(--accent); }
+
+    .role-link.primary {
+      background: var(--accent);
+      color: #080c18;
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+    .role-link.primary:hover { background: #00b8d9; box-shadow: 0 0 20px rgba(0,212,255,0.25); }
+
+    /* ── CTA Section ──────────────────────────────── */
+    .cta-section {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: var(--space-2xl) 48px;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cta-section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.9rem, 4vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+    }
+    .cta-section p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 36px;
+    }
+
+    .cta-btns {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ── Footer ───────────────────────────────────── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 36px 48px;
+      color: var(--muted);
+      font-size: 0.83rem;
+      border-top: 1px solid var(--border);
+      line-height: 1.8;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    .footer-warning {
+      margin-top: 10px;
+      font-size: 0.75rem;
+      color: #3d5069;
+    }
+
+    /* ── Responsive ───────────────────────────────── */
+    @media (max-width: 900px) {
+      .steps  { grid-template-columns: 1fr; }
+      .roles  { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 0 20px; }
+      .section { padding: 60px 20px; }
+      .features { grid-template-columns: 1fr; }
+      .stats-bar { flex-direction: column; }
+      .stat-item {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 22px 20px;
+      }
+      .stat-item:last-child { border-bottom: none; }
+      .cta-section { padding: 60px 20px; }
+      footer { padding: 28px 20px; }
+    }
+  </style>
 </head>
 <body>
-<div class="page hero">
-  <div class="auth-card">
 
-    <div class="auth-logo">
-      <h1>Brain<span style="color:var(--text)">Detect</span></h1>
-      <p>AI-powered brain tumour detection</p>
+  <!-- Navbar -->
+  <nav>
+    <a href="index.html" class="nav-logo">Brain<span>Detect</span></a>
+    <div class="nav-links">
+      <a href="patient.html" class="btn-outline" target="_blank" rel="noopener">🔍 View My Report</a>
+      <a href="login.html" class="btn-primary" target="_blank" rel="noopener">Doctor / Admin Login</a>
     </div>
+  </nav>
 
-    <!-- Tabs -->
-    <div class="tab-group">
-      <button class="tab-btn active" onclick="showTab('login')">Login</button>
-      <button class="tab-btn" onclick="showTab('register')">Register</button>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">🧠 AI-Powered Medical Imaging</div>
+      <h1>
+        Detect Brain Tumours<br/>
+        with <span class="accent">AI Precision</span>
+      </h1>
+      <p>
+        BrainDetect uses deep learning to classify brain MRI scans into four categories —
+        Glioma, Meningioma, Pituitary Tumour, and No Tumour — with 90.25% accuracy
+        and full Grad-CAM explainability.
+      </p>
+      <div class="hero-cta">
+        <a href="login.html" class="btn-hero-primary" target="_blank" rel="noopener">🔐 Doctor / Admin Login</a>
+        <a href="patient.html" class="btn-hero-secondary" target="_blank" rel="noopener">🔍 View My Report</a>
+      </div>
     </div>
+  </section>
 
-    <!-- Alert -->
-    <div class="alert" id="alert"></div>
-
-    <!-- LOGIN FORM -->
-    <form id="loginForm" onsubmit="handleLogin(event)">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="loginEmail" placeholder="you@hospital.com" required/>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="loginPassword" placeholder="••••••••" required/>
-      </div>
-      <button type="submit" class="btn btn-primary btn-full">Login</button>
-    </form>
-
-    <!-- REGISTER FORM -->
-    <form id="registerForm" style="display:none" onsubmit="handleRegister(event)">
-      <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="regName" placeholder="Dr. Jane Smith" required/>
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="regEmail" placeholder="you@hospital.com" required/>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="regPassword" placeholder="Min 6 characters" required/>
-      </div>
-      <div class="form-group">
-        <label>Role</label>
-        <select id="regRole">
-          <option value="doctor">Doctor</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Hospital</label>
-        <input type="text" id="regHospital" placeholder="Hospital name"/>
-      </div>
-      <button type="submit" class="btn btn-primary btn-full">Create Account</button>
-    </form>
-
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-num">90.25%</div>
+      <div class="stat-label">Model Accuracy</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">3</div>
+      <div class="stat-label">AI Models Trained</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">12,000</div>
+      <div class="stat-label">MRI Images Trained On</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">4</div>
+      <div class="stat-label">Tumour Classes</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">$0</div>
+      <div class="stat-label">Operational Cost</div>
+    </div>
   </div>
-</div>
 
-<!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  <!-- How It Works -->
+  <div class="section">
+    <div class="section-eyebrow">
+      <div class="section-label">How It Works</div>
+    </div>
+    <div class="section-title">From MRI Scan to Diagnosis<br/>in Seconds</div>
+    <div class="section-sub">
+      A streamlined three-step workflow connecting doctors, AI, and patients seamlessly.
+    </div>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">📤</div>
+        <div class="step-title">Upload MRI Scan</div>
+        <div class="step-desc">Doctor uploads a brain MRI image in JPEG or PNG format through the secure dashboard.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">🤖</div>
+        <div class="step-title">AI Analysis</div>
+        <div class="step-desc">Our fine-tuned MobileNetV2 model classifies the scan and generates a Grad-CAM heatmap showing exactly where it looked.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">📋</div>
+        <div class="step-title">Report &amp; Communication</div>
+        <div class="step-desc">Doctor saves the result, generates a PDF report, and shares a unique Report ID with the patient for instant access.</div>
+      </div>
+    </div>
+  </div>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyA7QZBDSeJN_ShK8BDAUmzG3Umob2L_8G8",
-    authDomain: "braindetect-1842e.firebaseapp.com",
-    projectId: "braindetect-1842e",
-    storageBucket: "braindetect-1842e.firebasestorage.app",
-    messagingSenderId: "760444584185",
-    appId: "1:760444584185:web:389962bf21b8b7e90c6228"
-  };
+  <!-- Features -->
+  <div class="section">
+    <div class="section-eyebrow">
+      <div class="section-label">Features</div>
+    </div>
+    <div class="section-title">Everything a Modern<br/>Diagnostic Tool Needs</div>
+    <div class="section-sub">Built for real clinical workflows, not just demos.</div>
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">🔥</div>
+        <div class="feature-body">
+          <div class="feature-title">Grad-CAM Explainability</div>
+          <div class="feature-desc">Every prediction includes a colour-coded heatmap showing which brain regions influenced the AI's decision — building clinical trust.</div>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <div class="feature-body">
+          <div class="feature-title">Real-Time Doctor-Patient Chat</div>
+          <div class="feature-desc">Instant messaging between doctors and patients about diagnosis results, powered by Firebase Firestore with no page refresh.</div>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📄</div>
+        <div class="feature-body">
+          <div class="feature-title">PDF Diagnostic Reports</div>
+          <div class="feature-desc">Professional PDF reports with MRI image, Grad-CAM, diagnosis, confidence scores, and AI-generated clinical recommendations.</div>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <div class="feature-body">
+          <div class="feature-title">Role-Based Access Control</div>
+          <div class="feature-desc">Three distinct user roles — Admin, Doctor, and Patient — each with dedicated dashboards and strict permission controls.</div>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-body">
+          <div class="feature-title">Prediction History</div>
+          <div class="feature-desc">Doctors can review all past analyses, filter by tumour type, and re-open Grad-CAM results from previous scans at any time.</div>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-body">
+          <div class="feature-title">Fully Deployed, Zero Cost</div>
+          <div class="feature-desc">Live globally on Railway (backend) and Vercel (frontend). No installation required — works in any modern browser worldwide.</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+  <!-- Who Is It For -->
+  <div class="section">
+    <div class="section-eyebrow">
+      <div class="section-label">Access</div>
+    </div>
+    <div class="section-title">Built for Everyone<br/>in the Care Chain</div>
+    <div class="section-sub">Different roles, different dashboards, same powerful AI.</div>
+    <div class="roles">
+      <div class="role-card">
+        <div class="role-icon">🏥</div>
+        <div class="role-title">Admin</div>
+        <div class="role-desc">Manage hospital accounts, create and disable doctor accounts, and view system-wide diagnostic statistics.</div>
+        <a href="login.html" class="role-link primary" target="_blank" rel="noopener">Admin Login →</a>
+      </div>
+      <div class="role-card">
+        <div class="role-icon">👨‍⚕️</div>
+        <div class="role-title">Doctor</div>
+        <div class="role-desc">Upload MRI scans, view AI predictions with Grad-CAM, generate patient reports, and communicate via real-time chat.</div>
+        <a href="login.html" class="role-link primary" target="_blank" rel="noopener">Doctor Login →</a>
+      </div>
+      <div class="role-card">
+        <div class="role-icon">🧑‍🤝‍🧑</div>
+        <div class="role-title">Patient</div>
+        <div class="role-desc">No account needed. Enter your unique Report ID to instantly view your diagnosis, Grad-CAM, and download your PDF report.</div>
+        <a href="patient.html" class="role-link" target="_blank" rel="noopener">View My Report →</a>
+      </div>
+    </div>
+  </div>
 
-  const API = "https://brain-tumor-production-dd38.up.railway.app";
+  <!-- CTA -->
+  <div class="cta-section">
+    <h2>Ready to Try BrainDetect?</h2>
+    <p>Free to use. No installation. Works in any browser.</p>
+    <div class="cta-btns">
+      <a href="login.html" class="btn-hero-primary" target="_blank" rel="noopener">🔐 Login as Doctor / Admin</a>
+      <a href="patient.html" class="btn-hero-secondary" target="_blank" rel="noopener">🔍 View My Report</a>
+    </div>
+  </div>
 
-  // ── Tab switching ────────────────────────────────────
-  window.showTab = (tab) => {
-    document.getElementById('loginForm').style.display    = tab === 'login'    ? 'block' : 'none';
-    document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
-    document.querySelectorAll('.tab-btn').forEach((b, i) => {
-      b.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
-    });
-    hideAlert();
-  };
+  <!-- Footer -->
+  <footer>
+    <p>
+      BrainDetect — AI-Powered Brain Tumour Detection &nbsp;·&nbsp;
+      Built with FastAPI, TensorFlow, Firebase &nbsp;·&nbsp;
+      <a href="https://github.com/Dipendra367/Brain-Tumor" target="_blank">GitHub</a>
+      &nbsp;·&nbsp;
+      <a href="https://brain-tumor-production-dd38.up.railway.app/docs" target="_blank">API Docs</a>
+    </p>
+    <p class="footer-warning">
+      ⚠️ BrainDetect is a decision-support tool. Not a substitute for professional medical diagnosis.
+    </p>
+  </footer>
 
-  // ── Alert helpers ─────────────────────────────────────
-  function showAlert(msg, type='error') {
-    const el = document.getElementById('alert');
-    el.textContent = msg;
-    el.className = `alert alert-${type} show`;
-  }
-  window.hideAlert = () => { document.getElementById('alert').className = 'alert'; };
-
-  // ── LOGIN ─────────────────────────────────────────────
-  window.handleLogin = async (e) => {
-    e.preventDefault();
-    const email    = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-
-    try {
-      const cred    = await signInWithEmailAndPassword(auth, email, password);
-      const idToken = await cred.user.getIdToken();
-
-      // Verify with backend + get role
-      const res  = await fetch(`${API}/api/auth/login`, {
-        method : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body   : JSON.stringify({ id_token: idToken })
-      });
-      const data = await res.json();
-
-      if (!res.ok) { showAlert(data.detail || 'Login failed'); return; }
-
-      // Save to session
-      sessionStorage.setItem('token',     idToken);
-      sessionStorage.setItem('uid',       data.uid);
-      sessionStorage.setItem('role',      data.role);
-      sessionStorage.setItem('full_name', data.full_name);
-
-      // Redirect by role
-      if      (data.role === 'admin')  window.location.href = 'admin.html';
-      else if (data.role === 'doctor') window.location.href = 'doctor.html';
-      else showAlert('Unknown role');
-
-    } catch (err) {
-      showAlert(err.message.includes('password') ? 'Invalid email or password' : err.message);
-    }
-  };
-
-  // ── REGISTER ──────────────────────────────────────────
-  window.handleRegister = async (e) => {
-    e.preventDefault();
-    const name     = document.getElementById('regName').value;
-    const email    = document.getElementById('regEmail').value;
-    const password = document.getElementById('regPassword').value;
-    const role     = document.getElementById('regRole').value;
-    const hospital = document.getElementById('regHospital').value;
-
-    try {
-      const res  = await fetch(`${API}/api/auth/register`, {
-        method : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body   : JSON.stringify({ email, password, role, full_name: name, hospital })
-      });
-      const data = await res.json();
-
-      if (!res.ok) { showAlert(data.detail || 'Registration failed'); return; }
-
-      showAlert(`Account created! You can now login.`, 'success');
-      showTab('login');
-
-    } catch (err) {
-      showAlert(err.message);
-    }
-  };
-</script>
 </body>
 </html>
